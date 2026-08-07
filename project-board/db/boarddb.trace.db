@@ -1,0 +1,6 @@
+2026-07-29 20:53:52.310786+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "POST2" not found (this database is empty); SQL statement:
+ALTER TABLE post2 DROP FOREIGN KEY fk_post_member [42104-240]
+2026-07-29 20:56:19.587811+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "POST2" not found (this database is empty); SQL statement:
+ALTER TABLE post2 DROP FOREIGN KEY fk_post_member [42104-240]
