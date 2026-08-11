@@ -1,3 +1,5 @@
+**/*.pem
+
 HELP.md
 .gradle
 build/
