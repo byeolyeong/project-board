@@ -7,10 +7,7 @@ DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS member_detail;
 DROP TABLE IF EXISTS member;
 
-
--- 데이터베이스 변경
 USE sns_db;
-
 
 -- 1. 회원 테이블 (기본 개체)
 CREATE TABLE member (
