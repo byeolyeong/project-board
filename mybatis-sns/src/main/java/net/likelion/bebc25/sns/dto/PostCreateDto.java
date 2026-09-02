@@ -1,12 +1,15 @@
 package net.likelion.bebc25.sns.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class PostCreateDto {
     private Long id;
@@ -14,7 +17,7 @@ public class PostCreateDto {
     private String content;
     private String imageUrl;
 
-    public PostCreateDto( Long memberId, String content, String imageUrl) {
+    public PostCreateDto(Long memberId, String content, String imageUrl) {
         this.memberId = memberId;
         this.content = content;
         this.imageUrl = imageUrl;
