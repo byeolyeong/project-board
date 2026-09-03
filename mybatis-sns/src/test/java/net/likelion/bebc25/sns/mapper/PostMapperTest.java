@@ -183,4 +183,5 @@ class PostMapperTest {
             assertThat(postMapper.findById(id)).isNull();
         }
     }
+
 }

@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mybatis-sns.main.iml" filepath="$PROJECT_DIR$/.idea/modules/mybatis-sns.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mybatis-sns.test.iml" filepath="$PROJECT_DIR$/.idea/modules/mybatis-sns.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/springboot-star.iml" filepath="$PROJECT_DIR$/.idea/springboot-star.iml" />
     </modules>
   </component>

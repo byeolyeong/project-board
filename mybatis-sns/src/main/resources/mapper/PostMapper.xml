@@ -23,7 +23,6 @@
         SELECT <include refid="postColumns" />
         FROM post
         WHERE id = #{id}
-
     </select>
 
     <!-- 3. 작성자 ID 기반 목록 조회 -->
@@ -84,7 +83,7 @@
         </collection>
     </resultMap>
 
-    <!-- 게시글 상세 + 작성자 + 댓글 3중 조인 쿼리 -->
+    <!-- 7. 게시글 상세 + 작성자 + 댓글 3중 조인 쿼리 -->
     <select id="findPostDetailById" parameterType="long" resultMap="PostDetailResultMap">
         SELECT
         p.id AS post_id,
@@ -105,6 +104,7 @@
         LEFT JOIN member cm ON c.member_id = cm.id
         WHERE p.id = #{id}
         ORDER BY c.id ASC
+        LIMIT 10
     </select>
 
     <!-- 8. 다중 조건 동적 검색 쿼리 -->
