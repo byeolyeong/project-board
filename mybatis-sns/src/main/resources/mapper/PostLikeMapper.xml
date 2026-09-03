@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper>
+<mapper namespace="net.likelion.bebc25.sns.mapper.PostLikeMapper">
     <!-- 좋아요 등록 -->
     <insert id="insertLike">
         INSERT INTO post_like (member_id, post_id)
@@ -15,6 +15,7 @@
         DELETE FROM post_like
         WHERE member_id = #{memberId} AND post_id = #{postId};
     </delete>
+
     <!-- 좋아요 등록 여부 조회 -->
     <select id="countLike">
         SELECT COUNT(*)
@@ -22,4 +23,18 @@
         WHERE member_id = #{memberId} AND post_id = #{postId};
     </select>
 
+    <!-- 게시글의 like_count 1 증가 -->
+    <update id="increaseLikeCount">
+        UPDATE post
+        SET like_count = like_count + 1
+        WHERE id = #{postId};
+    </update>
+
+    <!-- 게시글의 like_count 1 감소 -->
+    <update id="decreaseLikeCount">
+        UPDATE post
+        SET like_count = GREATEST(like_count - 1, 0)
+        WHERE id = #{postId};
+    </update>
+    
 </mapper>

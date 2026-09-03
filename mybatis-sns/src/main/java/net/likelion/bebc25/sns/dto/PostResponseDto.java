@@ -7,6 +7,7 @@ public record PostResponseDto(
         Long memberId,
         String content,
         String imageUrl,
+        int likeCount,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {}

@@ -45,4 +45,13 @@ public interface PostMapper {
 
     // 11. 다중 ID 일괄 삭제 (<foreach>)
     void deleteByIds(@Param("idList") List<Long> idList);
+
+    // 게시글 좋아요 +1
+    void increaseLikeCount(@Param("postId") Long postId);
+
+    // 게시글 좋아요 -1
+    void decreaseLikeCount(@Param("postId") Long postId);
+
+
+
 }
