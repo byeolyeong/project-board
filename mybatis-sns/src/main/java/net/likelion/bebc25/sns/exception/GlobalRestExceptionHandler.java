@@ -2,11 +2,14 @@ package net.likelion.bebc25.sns.exception;
 import net.likelion.bebc25.sns.dto.ApiErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 // REST API에서 발생하는 예외를 전역적으로 처리하는 클래스
@@ -25,9 +28,30 @@ public class GlobalRestExceptionHandler {
     // @Valid 유효성 검증 실패할 경우 호출됨(400 Bad request 응답)
     // 클라이언트가 전송한 DTO의 제약조건(@NotNull, @NotBlank, @Size 등)을 위반할 경우 스프링이 발생시키는 예외 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex){
+    public ResponseEntity<ApiErrorResponse> handleValidationException(MethodArgumentNotValidException ex){
+        // 예외 객체에서 유효성 검증 결과를 가져옴
+        BindingResult bindingResult = ex.getBindingResult();
+        // 스프링이 만든 FieldError를 ApiErrorResponse의 Field
+        // 유효성 검증에 실패한 필드들의 오류 정보를 가져온다.
+        List<ApiErrorResponse.FieldErrorDetail> fieldErrors = bindingResult.getFieldErrors().stream()
+                // 검증 실패 정보를 API 응답에 사용할 FieldErrorDetail 객체로 변환하기 위해서 Stream API를 사용함
+                .map(error -> new ApiErrorResponse.FieldErrorDetail(
+                        // 오류가 발생한 필드명을 가져옴
+                        // 예: "title", "content"
+                        error.getField(),
+                        // 검증에 실패한 입력값을 가져옴
+                        // 입력값이 null이면 빈 문자열("")을 사용함
+                        error.getRejectedValue() == null ? "" : error.getRejectedValue().toString(),
+                        // 해당 필드의 유효성 검증 실패 메시지를 가져옴
+                        // 예: "제목은 필수입니다."
+                        error.getDefaultMessage()
+                ))
+                // 변환된 FieldErrorDetail 객체들을 List로 만든다.
+                .toList();
+
         // 현재는 예외 메시지를 그대로 응답함
-        return ResponseEntity.status(400).body(ex.getMessage());
+        ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, fieldErrors);
+        return ResponseEntity.status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatus()).body(response);
     }
 
     // =========================================================

@@ -20,7 +20,7 @@ import java.util.List;
 // @RequestMapping
 // 게시글 API의 공통 URL
 // 실제 요청 주소: /api/v1/posts
-@RestController
+//@RestController
 @RequestMapping("/api/v1/posts")
 public class PostRestController {
 

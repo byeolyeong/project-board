@@ -61,6 +61,10 @@ WHERE id = 2;
 SELECT * FROM post WHERE id = 2;
 
 
+-- email로 회원 정보 조회
+SELECT * FROM member WHERE email = 'user1@example.com'
+
+
 
 
 
