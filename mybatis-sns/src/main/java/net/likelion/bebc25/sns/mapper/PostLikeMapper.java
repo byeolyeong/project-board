@@ -15,13 +15,4 @@ public interface PostLikeMapper {
     // 특정 회원의 게시글 좋아요 등록 여부 조회(0, 1)
     int countLike(@Param("memberId") Long memberId, @Param("postId") Long PostId);
 
-    // 게시글 좋아요 수 증가
-    int increaseLikeCount(
-            @Param("postId") Long postId
-    );
-
-    // 게시글 좋아요 수 감소
-    int decreaseLikeCount(
-            @Param("postId") Long postId
-    );
 }

@@ -1,9 +1,9 @@
 package net.likelion.bebc25.sns.service;
 
-import net.likelion.bebc25.sns.dto.PostCreateDto;
-import net.likelion.bebc25.sns.dto.PostDetailResponseDto;
-import net.likelion.bebc25.sns.dto.PostResponseDto;
-import net.likelion.bebc25.sns.dto.PostUpdateDto;
+import net.likelion.bebc25.sns.dto.PostCreateRequest;
+import net.likelion.bebc25.sns.dto.PostDetailResponse;
+import net.likelion.bebc25.sns.dto.PostResponse;
+import net.likelion.bebc25.sns.dto.PostUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +26,14 @@ class PostServiceTest {
     @DisplayName("신규 게시글 등록 및 단건 조회 테스트")
     void createAndFindPostTest() {
         // given
-        PostCreateDto createDto = new PostCreateDto(1L, "서비스 계층 등록 테스트 본문", "https://image.com/service.jpg");
+        PostCreateRequest createDto = new PostCreateRequest(1L, "서비스 계층 등록 테스트 본문", "https://image.com/service.jpg");
 
         // when
-        Long savedId = postService.createPost(createDto);
-        PostResponseDto foundPost = postService.getPostById(savedId);
+        PostResponse createPost = postService.createPost(createDto);
+        PostResponse foundPost = postService.getPostById(createPost.id());
 
         // then
-        assertThat(savedId).isNotNull();
+        assertThat(createPost.id()).isNotNull();
         assertThat(foundPost.content()).isEqualTo("서비스 계층 등록 테스트 본문");
         assertThat(foundPost.memberId()).isEqualTo(1L);
     }
@@ -45,7 +45,7 @@ class PostServiceTest {
         Long postId = 1L;
 
         // when
-        PostDetailResponseDto detail = postService.getPostDetailById(postId);
+        PostDetailResponse detail = postService.getPostDetailById(postId);
 
         // then
         assertThat(detail).isNotNull();
@@ -60,11 +60,11 @@ class PostServiceTest {
     void updatePostTest() {
         // given
         Long postId = 1L;
-        PostUpdateDto updateDto = new PostUpdateDto("수정된 비즈니스 본문 내용", "https://image.com/updated.jpg");
+        PostUpdateRequest updateDto = new PostUpdateRequest("수정된 비즈니스 본문 내용", "https://image.com/updated.jpg");
 
         // when
         postService.updatePost(postId, updateDto);
-        PostResponseDto updatedPost = postService.getPostById(postId);
+        PostResponse updatedPost = postService.getPostById(postId);
 
         // then
         assertThat(updatedPost.content()).isEqualTo("수정된 비즈니스 본문 내용");

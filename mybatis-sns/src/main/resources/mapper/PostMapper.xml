@@ -11,7 +11,7 @@
     </sql>
 
     <!-- 1. 전체 목록 조회 -->
-    <select id="findAll" resultType="PostResponseDto">
+    <select id="findAll" resultType="PostResponse">
         SELECT <include refid="postColumns" />
         FROM post
         ORDER BY id DESC
@@ -19,14 +19,14 @@
     </select>
 
     <!-- 2. ID 기반 단건 상세 조회 -->
-    <select id="findById" parameterType="long" resultType="PostResponseDto">
+    <select id="findById" parameterType="long" resultType="PostResponse">
         SELECT <include refid="postColumns" />
         FROM post
         WHERE id = #{id}
     </select>
 
     <!-- 3. 작성자 ID 기반 목록 조회 -->
-    <select id="findByMemberId" parameterType="long" resultType="PostResponseDto">
+    <select id="findByMemberId" parameterType="long" resultType="PostResponse">
         SELECT <include refid="postColumns" />
         FROM post
         WHERE member_id = #{memberId}
@@ -35,7 +35,7 @@
     </select>
 
     <!-- 4. 신규 게시글 등록 (자동 생성 PK 바인딩) -->
-    <insert id="save" parameterType="PostCreateDto" useGeneratedKeys="true" keyProperty="id">
+    <insert id="save" parameterType="PostCreateRequest" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post (member_id, content, image_url, created_at, updated_at)
         VALUES (#{memberId}, #{content}, #{imageUrl}, NOW(), NOW())
     </insert>
@@ -56,14 +56,14 @@
     </delete>
 
     <!-- ResultMap 복합 객체 조립 정의 (1:1 작성자, 1:N 댓글 목록) -->
-    <resultMap id="PostDetailResultMap" type="PostDetailResponseDto">
+    <resultMap id="PostDetailResultMap" type="PostDetailResponse">
         <id property="id" column="post_id" />
         <result property="content" column="post_content" />
         <result property="imageUrl" column="post_image_url" />
         <result property="createdAt" column="post_created_at" />
 
         <!-- 작성자 회원 정보 1:1 매핑 -->
-        <association property="author" javaType="MemberResponseDto">
+        <association property="author" javaType="MemberResponse">
             <constructor>
                 <idArg column="member_id" javaType="Long" />
                 <arg column="member_nickname" javaType="String" />
@@ -72,7 +72,7 @@
         </association>
 
         <!-- 댓글 목록 1:N 매핑 -->
-        <collection property="comments" ofType="CommentResponseDto" javaType="ArrayList">
+        <collection property="comments" ofType="CommentResponse" javaType="ArrayList">
             <constructor>
                 <idArg column="comment_id" javaType="Long" />
                 <arg column="commenter_id" javaType="Long" />
@@ -108,7 +108,7 @@
     </select>
 
     <!-- 8. 다중 조건 동적 검색 쿼리 -->
-    <select id="searchPosts" parameterType="PostSearchCondition" resultType="PostResponseDto">
+    <select id="searchPosts" parameterType="PostSearchRequest" resultType="PostResponse">
         SELECT <include refid="postColumns" />
         FROM post
         <where>
@@ -130,7 +130,7 @@
     </select>
 
     <!-- 9. 동적 정렬 분기 조회 -->
-    <select id="findPostsWithSort" parameterType="PostSearchCondition" resultType="PostResponseDto">
+    <select id="findPostsWithSort" parameterType="PostSearchRequest" resultType="PostResponse">
         SELECT id, member_id, content, image_url, like_count, created_at, updated_at
         FROM post
         <choose>
@@ -168,5 +168,18 @@
         </foreach>
     </delete>
 
+    <!-- 게시글 좋아요 수 1 증가 -->
+    <update id="increaseLikeCount">
+        UPDATE post
+        SET like_count = like_count + 1
+        WHERE id = #{postId}
+    </update>
+
+    <!-- 게시글 좋아요 수 1 감소 -->
+    <update id="decreaseLikeCount">
+        UPDATE post
+        SET like_count = GREATEST(like_count - 1, 0)
+        WHERE id = #{postId}
+    </update>
 
 </mapper>

@@ -1,6 +1,6 @@
 package net.likelion.bebc25.sns.dto;
 
-public record MemberResponseDto(
+public record MemberResponse(
         Long id,
         String nickname,
         String profileImage

@@ -15,14 +15,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostDetailResponseDto {
+public class PostDetailResponse {
     private Long id;
     private String content;
     private String imageUrl;
     private LocalDateTime createdAt;
-    private MemberResponseDto author;
+    private MemberResponse author;
 
     // 댓글이 없는 경우 NullPointerException 방지 및 빌더 패턴 사용 시 빈 리스트 유지를 위한 기본값 설정
     @Builder.Default
-    private List<CommentResponseDto> comments = new ArrayList<>();
+    private List<CommentResponse> comments = new ArrayList<>();
 }

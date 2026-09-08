@@ -1,0 +1,7 @@
+info:
+  name: 게시글
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

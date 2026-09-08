@@ -6,19 +6,19 @@ import java.util.List;
 
 public interface PostService {
     // 게시글 신규 등록 (생성된 PK 반환)
-    Long createPost(PostCreateDto dto);
+    PostResponse createPost(PostCreateRequest dto);
 
     // 게시글 단건 기본 조회
-    PostResponseDto getPostById(Long id);
+    PostResponse getPostById(Long id);
 
     // 게시글 복합 상세 조회 (게시글 + 작성자 + 댓글 목록)
-    PostDetailResponseDto getPostDetailById(Long id);
+    PostDetailResponse getPostDetailById(Long id);
 
     // 다중 조건 동적 검색 및 정렬 목록 조회
-    List<PostResponseDto> searchPosts(PostSearchCondition condition);
+    List<PostResponse> searchPosts(PostSearchRequest condition);
 
     // 게시글 본문 및 이미지 수정
-    void updatePost(Long id, PostUpdateDto dto);
+    void updatePost(Long id, PostUpdateRequest dto);
 
     // 게시글 단건 삭제
     void deletePost(Long id);

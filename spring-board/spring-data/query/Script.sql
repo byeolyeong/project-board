@@ -27,5 +27,45 @@ VALUES
 
 UPDATE post SET content = 'content만 수정' WHERE id = 500000;
 UPDATE post SET image_url = 'only.png' WHERE id = 499999;
+UPDATE post SET content = 'content와 이미지 수정', image_url = 'also_image.png' WHERE id = 499998
 
-DELETE FROM post WHERE id IN (499997, 499996)
+DELETE FROM post WHERE id IN (499997, 499996);
+
+--  좋아요 등록
+INSERT INTO post_like (member_id, post_id)
+	VALUES (1, 2);
+
+-- 좋아요 취소
+DELETE FROM post_like 
+WHERE member_id = 1 AND post_id = 2;
+
+SELECT * FROM post_like;
+
+-- 좋아요 등록 여부
+SELECT COUNT(*) 
+FROM post_like 
+WHERE member_id = 1 AND post_id = 2;
+
+-- 좋아요 수치 증가
+UPDATE post
+SET like_count = like_count + 1
+WHERE id = 2;
+
+SELECT * FROM post WHERE id = 2;
+
+-- 좋아요 수치 감소
+UPDATE post
+SET like_count = GREATEST(like_count - 1, 0)
+WHERE id = 2;
+
+SELECT * FROM post WHERE id = 2;
+
+
+
+
+
+
+
+
+
+
