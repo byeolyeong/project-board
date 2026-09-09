@@ -1,4 +1,5 @@
 package net.likelion.bebc25.sns.exception;
+import lombok.extern.slf4j.Slf4j;
 import net.likelion.bebc25.sns.dto.ApiErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ import java.util.NoSuchElementException;
 // REST API에서 발생하는 예외를 전역적으로 처리하는 클래스
 // 각 Controller에서 예외를 직접 처리하지 않고 이곳에서 한 번에 처리한다.
 @RestControllerAdvice
+@Slf4j
 public class GlobalRestExceptionHandler {
 
     // =========================================================
@@ -114,6 +116,8 @@ public class GlobalRestExceptionHandler {
     // 서버 내부 오류가 발생했을 때 (500 Internal Server Error 응답)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGeneralException(Exception ex) {
+        //에러 메세지 출력
+        log.error(ex.getMessage());
         // 서버 내부 오류에 해당하는 에러 응답을 생성함
         ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage());
         // HTTP 500 Internal Server Error와 에러 응답 데이터를 반환함

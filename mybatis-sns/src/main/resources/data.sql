@@ -1,10 +1,10 @@
 -- 1. 회원 (member) 초기 데이터
 INSERT INTO member (id, email, password, nickname, profile_image, role, created_at) VALUES
-(1, 'admin@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '스프링러버', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', 'ROLE_ADMIN', '2026-08-01 09:15:00'),
-(2, 'user1@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '자바마스터', 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61', 'ROLE_ADMIN','2026-08-03 14:20:00'),
-(3, 'user2@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '코딩하는고양이', 'https://images.unsplash.com/photo-1580489944761-15a19d654956', 'ROLE_USER','2026-08-05 11:30:00'),
-(4, 'user3@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '개발꿈나무', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d', 'ROLE_USER', '2026-08-08 16:45:00'),
-(5, 'user4@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '풀스택도전자', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330', 'ROLE_USER', '2026-08-10 18:10:00');
+(1, 'admin@example.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq', '스프링러버', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', 'ROLE_ADMIN', '2026-08-01 09:15:00'),
+(2, 'user1@example.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq', '자바마스터', 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61', 'ROLE_ADMIN','2026-08-03 14:20:00'),
+(3, 'user2@example.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq', '코딩하는고양이', 'https://images.unsplash.com/photo-1580489944761-15a19d654956', 'ROLE_USER','2026-08-05 11:30:00'),
+(4, 'user3@example.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq', '개발꿈나무', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d', 'ROLE_USER', '2026-08-08 16:45:00'),
+(5, 'user4@example.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq', '풀스택도전자', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330', 'ROLE_USER', '2026-08-10 18:10:00');
 
 -- 2. 회원 상세 (member_detail) 초기 데이터
 INSERT INTO member_detail (member_id, introduction, address, marketing_agreed) VALUES
