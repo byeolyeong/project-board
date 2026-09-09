@@ -14,7 +14,7 @@ http:
       description: 작성자 회원 ID
   params:
     - name: id
-      value: "1"
+      value: "2"
       type: path
       description: 수정할 게시글 ID
   body:

@@ -1,6 +1,7 @@
 info:
   name: SNS 게시글 API
   type: folder
+  seq: 1
 
 request:
   auth: inherit

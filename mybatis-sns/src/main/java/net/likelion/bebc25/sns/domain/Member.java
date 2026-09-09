@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class Member {
     private Long id;
     private String email;
+    private String nickname;
     private String password;
     private String profileImage;
     // 별도로 지정하지 않으면 기본적으로 일반 사용자 권한을 부여한다.

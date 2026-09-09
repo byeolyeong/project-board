@@ -13,6 +13,12 @@ config:
         username: ""
         password: ""
       bypassProxy: ""
+
+request:
+  auth:
+    type: basic
+    username: user1@example.com
+    password: "1234"
 bundled: false
 extensions:
   bruno:

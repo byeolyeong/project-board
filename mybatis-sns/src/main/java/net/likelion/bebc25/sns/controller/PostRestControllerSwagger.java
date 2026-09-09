@@ -37,7 +37,7 @@ import java.util.List;
 
 // REST API 요청을 처리하는 Controller
 // 반환값은 주로 JSON 형태로 응답
-@RestController
+//@RestController
 // 게시글 API의 공통 URL
 // 실제 요청 주소: /api/v1/posts
 @RequestMapping("/api/v1/posts")

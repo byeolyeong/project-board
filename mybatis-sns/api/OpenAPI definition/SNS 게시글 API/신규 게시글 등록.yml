@@ -10,7 +10,7 @@ http:
   url: "{{baseUrl}}/api/v1/posts"
   headers:
     - name: X-Member-Id
-      value: "1"
+      value: "2"
       description: 작성자 회원 ID
   body:
     type: json

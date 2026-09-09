@@ -119,7 +119,7 @@ public class GlobalRestExceptionHandler {
         //에러 메세지 출력
         log.error(ex.getMessage());
         // 서버 내부 오류에 해당하는 에러 응답을 생성함
-        ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage());
+        ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         // HTTP 500 Internal Server Error와 에러 응답 데이터를 반환함
         return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus()).body(response);
     }
