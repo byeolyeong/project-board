@@ -1,87 +1,112 @@
 package net.likelion.bebc25.sns.security.config;
 
+import net.likelion.bebc25.sns.security.handler.CustomAccessDeniedHandler;
+import net.likelion.bebc25.sns.security.handler.CustomAuthenticationEntryPoint;
+import net.likelion.bebc25.sns.security.jwt.JwtAuthenticationFilter;
+import net.likelion.bebc25.sns.security.jwt.JwtProvider;
+import net.likelion.bebc25.sns.security.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-// Spring Security의 전체 보안 설정을 담당하는 Configuration 클래스
+import java.net.http.HttpRequest;
+
 @Configuration
-// Spring Security의 웹 보안 기능을 활성화함
 @EnableWebSecurity
+@EnableMethodSecurity // 컨트롤러나 서비스 계층 메서드 단위의 보안 검증 작업 활성화
 public class SecurityConfig {
-    // Spring Security의 보안 필터 체인을 Bean으로 등록함
-    // HTTP 요청이 들어오면 SecurityFilterChain을 거쳐 인증/인가 여부를 검사함
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // =========================================================
-                // CSRF 설정
-                // =========================================================
 
-                // CSRF(Cross-Site Request Forgery) 공격 방어 기능을 비활성화함
-                // 현재 API는 Stateless 방식으로 동작하며,
-                // 학습 단계에서는 CSRF를 사용하지 않도록 설정함
+    // Spring Security에서 로그인 인증을 담당하는 객체를 Bean으로 등록
+    // AuthRestController에서 로그인 요청을 인증할 때 사용한다.
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+
+    // JWT를 생성하고 검증하는 객체
+    private final JwtProvider jwtProvider;
+
+    // 이메일을 이용해 DB에서 사용자 정보를 조회하는 객체
+    private final CustomUserDetailsService userDetailsService;
+
+    public SecurityConfig(JwtProvider jwtProvider, CustomUserDetailsService userDetailsService) {
+        this.jwtProvider = jwtProvider;
+        this.userDetailsService = userDetailsService;
+    }
+
+
+    // Spring Security의 전체 HTTP 보안 설정을 정의하는 필터 체인
+    // 모든 HTTP 요청은 이 설정을 기준으로 인증과 권한 검사를 받는다.
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+            CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception {
+        http
                 // CSRF 공격 방어 기능 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // =========================================================
-                // 인증 방식 설정
-                // =========================================================
-
-                // HTTP Basic 인증 방식을 활성화함
-                // 요청 Header의 Authorization에 인증 정보를 전달하는 방식
                 // HTTP 기본 인증 활성화
                 .httpBasic(Customizer.withDefaults())
 
-                // 기본 로그인 페이지(Form Login)는 사용하지 않음
-                // REST API에서는 HTML 로그인 페이지 대신 API 방식으로 인증을 처리함
                 // 기본 폼 로그인 비활성화
                 .formLogin(AbstractHttpConfigurer::disable)
 
-                // =========================================================
-                // 세션 설정
-                // =========================================================
-
-                // 서버에서 로그인 상태를 Session에 저장하지 않음
-                // 각 요청마다 인증 정보를 전달하는 Stateless 방식으로 동작함
                 // 세션 생성 및 보관 비활성화
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // =========================================================
-                // URL별 접근 권한 설정
-                // =========================================================
+                // Filter에서 발생하는 예외 처리 핸들러
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                )
 
-                // HTTP 요청 URL과 사용자의 권한에 따라 접근을 허용하거나 차단함
+                // 커스텀 JWT 인증 필터를 UsernamePasswordAuthenticationFilter 바로 앞에 배치
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtProvider, userDetailsService),
+                        UsernamePasswordAuthenticationFilter.class
+                )
+
                 // URL 엔드포인트별 기본 접근 인가 설정
                 .authorizeHttpRequests(auth -> auth
-                        // 로그인/회원가입 API와 Swagger 문서는 인증 없이 접근할 수 있다.
-                        // 예: /api/v1/auth/login
-                        //     /api/v1/auth/signup
-                        //     /swagger-ui/index.html
-                        .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        // 게시글 목록 조회는 인증 없이 허용한다.
-                        // GET /api/v1/posts
-                        .requestMatchers(HttpMethod.GET,"/api/v1/posts").permitAll()
-                        // 게시글 상세 조회도 인증 없이 허용한다.
-                        // GET /api/v1/posts/{id}
-                        .requestMatchers(HttpMethod.GET,"/api/v1/posts/**").permitAll()
-                        // 관리자 API는 ADMIN 권한을 가진 사용자만 접근할 수 있다.
-                        // hasRole("ADMIN")은 내부적으로 ROLE_ADMIN 권한을 확인한다.
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // ROLE_ADMIN 체크
-                        // 위에서 명시적으로 허용하지 않은 모든 요청은
-                        // 인증된 사용자만 접근할 수 있도록 설정한다.
+                        // 게시글 목록 및 상세 조회(GET)는 비로그인 사용자에게도 공개 허용
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
+
+                        // 공지사항 조회(GET)는 비로그인 사용자에게도 공개 허용
+                        .requestMatchers(HttpMethod.GET, "/api/v1/notices/**").permitAll()
+
+                        // 공지사항 등록, 수정, 삭제(POST, PUT, DELETE 등)는 관리자 또는 매니저 권한 필수
+                        .requestMatchers("/api/v1/notices/**").hasAnyRole("ADMIN", "MANAGER")
+
+                        // 로그인, 회원가입 등 인증 진입 엔드포인트 접근 허용
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+
+                        // H2 인메모리 데이터베이스 웹 콘솔 접근 허용 (개발 환경 전용)
+                        .requestMatchers("/h2-console/**").permitAll()
+
+                        // Swagger UI 및 OpenAPI API 사양 문서 화면 접근 허용
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                        // 관리자 전용 엔드포인트 (ROLE_ADMIN 권한 필수)
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+
+                        // 그 외 모든 요청(게시글 작성, 수정, 삭제 등)은 로그인 인증을 거쳐야 함
                         .anyRequest().authenticated()
                 );
 
-        // 지금까지 설정한 내용을 기반으로 SecurityFilterChain을 생성하여 반환한다.
         return http.build();
     }
 }

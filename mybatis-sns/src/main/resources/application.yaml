@@ -40,3 +40,10 @@ springdoc:
     # OpenAPI 문서 자동 생성 활성화 및 엔드포인트 경로
     enabled: true
     path: /v3/api-docs
+
+
+jwt:
+  # Base64로 인코딩된 최소 256비트(32바이트) 이상의 보안 비밀키
+  secret: dGhpc2lzbXlzZWNyZXRrZXlmb3Jqd3R0b2tlbnNpZ25hdHVyZXZhbGlkYXRpb24xMjM0NTY3ODkwIQ==
+  access-token-expiration: 3600000      # 1시간 (밀리초 단위)
+  refresh-token-expiration: 604800000   # 7일 (밀리초 단위)

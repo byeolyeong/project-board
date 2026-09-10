@@ -7,7 +7,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/api/v1/posts?keyword=개발&memberId=1"
+  url: "{{baseUrl}}/posts?keyword=개발&memberId=1"
   params:
     - name: keyword
       value: 개발

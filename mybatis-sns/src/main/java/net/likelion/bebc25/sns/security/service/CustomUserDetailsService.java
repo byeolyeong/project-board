@@ -37,4 +37,19 @@ public class CustomUserDetailsService implements UserDetailsService {
         // CustomUserDetails 객체로 변환하여 반환한다.
         return new CustomUserDetails(member);
     }
+
+    public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
+
+        // 전달받은 회원 ID(PK)를 기준으로 DB에서 회원 정보를 조회한다.
+        Member member = memberMapper.findById(id);
+
+        // 해당 ID의 회원이 존재하지 않는 경우
+        if(member == null){
+            // Spring Security에 사용자를 찾을 수 없음을 알린다.
+            throw new UsernameNotFoundException("사용자가 없습니다.");
+        }
+        // 조회한 Member 객체를 Spring Security가 사용할 수 있도록
+        // CustomUserDetails 객체로 변환하여 반환한다.
+        return new CustomUserDetails(member);
+    }
 }

@@ -7,22 +7,22 @@ info:
 
 http:
   method: PUT
-  url: "{{baseUrl}}/api/v1/posts/:id"
+  url: "{{baseUrl}}/posts/:id"
   headers:
     - name: X-Member-Id
       value: "1"
       description: 작성자 회원 ID
   params:
     - name: id
-      value: "2"
+      value: "1"
       type: path
       description: 수정할 게시글 ID
   body:
     type: json
     data: |-
       {
-        "content": "",
-        "imageUrl": ""
+        "content": "수정 내용",
+        "imageUrl": "http.."
       }
   auth: inherit
 

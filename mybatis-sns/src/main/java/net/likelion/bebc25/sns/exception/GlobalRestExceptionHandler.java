@@ -2,6 +2,7 @@ package net.likelion.bebc25.sns.exception;
 import lombok.extern.slf4j.Slf4j;
 import net.likelion.bebc25.sns.dto.ApiErrorResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -73,6 +74,13 @@ public class GlobalRestExceptionHandler {
         return ResponseEntity.status(ErrorCode.BUSINESS_RULE_VIOLATION.getHttpStatus()).body(response);
     }
 
+    // 권한이 없는 리소스 접근 시 호출됨(403 Forbidden 응답)
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.FORBIDDEN_OPERATION);
+        return ResponseEntity.status(ErrorCode.FORBIDDEN_OPERATION.getHttpStatus()).body(response);
+    }
+
     // =========================================================
     // 요청한 자원을 찾을 수 없음
     // HTTP 404 Not Found
@@ -116,8 +124,8 @@ public class GlobalRestExceptionHandler {
     // 서버 내부 오류가 발생했을 때 (500 Internal Server Error 응답)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGeneralException(Exception ex) {
-        //에러 메세지 출력
-        log.error(ex.getMessage());
+        // 에러 메세지 출력
+        log.error("Exception 발생", ex);
         // 서버 내부 오류에 해당하는 에러 응답을 생성함
         ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         // HTTP 500 Internal Server Error와 에러 응답 데이터를 반환함

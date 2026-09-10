@@ -7,7 +7,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/api/v1/posts"
+  url: "{{baseUrl}}/posts"
   headers:
     - name: X-Member-Id
       value: "2"
@@ -19,7 +19,6 @@ http:
         "content": "스프링 부트 학습중...",
         "imageUrl": "https://sample.com/images/hello.png"
       }
-  auth: inherit
 
 settings:
   encodeUrl: true

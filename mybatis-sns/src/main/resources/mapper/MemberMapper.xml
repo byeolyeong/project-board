@@ -5,9 +5,12 @@
 
 <mapper namespace="net.likelion.bebc25.sns.mapper.MemberMapper">
 
-    <select id="findByEmail" parameterType="String" resultType="net.likelion.bebc25.sns.domain.Member">
+    <select id="findByEmail" parameterType="string" resultType="net.likelion.bebc25.sns.domain.Member">
         SELECT id, email, password, nickname, profile_image, role, created_At FROM member WHERE email = #{email}
     </select>
 
+    <select id="findById" parameterType="long" resultType="net.likelion.bebc25.sns.domain.Member">
+        SELECT id, email, password, nickname, profile_image, role, created_At FROM member WHERE id = #{id}
+    </select>
 
 </mapper>
