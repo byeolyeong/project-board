@@ -1,9 +1,12 @@
 package net.likelion.bebc25.sns.security.config;
 
+import net.likelion.bebc25.sns.security.filter.RequestAuditFilter;
 import net.likelion.bebc25.sns.security.handler.CustomAccessDeniedHandler;
 import net.likelion.bebc25.sns.security.handler.CustomAuthenticationEntryPoint;
+import net.likelion.bebc25.sns.security.handler.OAuth2SuccessHandler;
 import net.likelion.bebc25.sns.security.jwt.JwtAuthenticationFilter;
 import net.likelion.bebc25.sns.security.jwt.JwtProvider;
+import net.likelion.bebc25.sns.security.oauth.CustomOAuth2UserService;
 import net.likelion.bebc25.sns.security.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +21,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 
 import java.net.http.HttpRequest;
 
@@ -40,11 +44,21 @@ public class SecurityConfig {
     // 이메일을 이용해 DB에서 사용자 정보를 조회하는 객체
     private final CustomUserDetailsService userDetailsService;
 
-    public SecurityConfig(JwtProvider jwtProvider, CustomUserDetailsService userDetailsService) {
+    // 소셜 로그인 사용자의 정보를 조회하고 DB 회원과 연결하는 객체
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+    // 소셜 로그인 성공 후 JWT 발급 및 리다이렉트를 처리하는 객체
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
+    public SecurityConfig(JwtProvider jwtProvider,
+                          CustomUserDetailsService userDetailsService,
+                          CustomOAuth2UserService customOAuth2UserService,
+                          OAuth2SuccessHandler oAuth2SuccessHandler) {
         this.jwtProvider = jwtProvider;
         this.userDetailsService = userDetailsService;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
     }
-
 
     // Spring Security의 전체 HTTP 보안 설정을 정의하는 필터 체인
     // 모든 HTTP 요청은 이 설정을 기준으로 인증과 권한 검사를 받는다.
@@ -52,8 +66,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-            CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception {
+            CustomAccessDeniedHandler customAccessDeniedHandler, OAuth2SuccessHandler oAuth2SuccessHandler, CustomOAuth2UserService customOAuth2UserService) throws Exception {
         http
+                // 보안 감사 필터 등록 (요청 유입 및 처리 소요 시간 계측)
+                .addFilterBefore(
+                        new RequestAuditFilter(),
+                        SecurityContextHolderFilter.class
+                )
+
                 // CSRF 공격 방어 기능 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
 
@@ -80,10 +100,24 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
 
+                // OAuth2 소셜 로그인 기능 활성화
+                .oauth2Login(oauth2 -> oauth2
+                        // 1. 소셜 사용자 프로필 조회 및 DB 저장 커스텀 서비스 등록
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        // 2. 소셜 인증 성공 후 자체 JWT 발급 및 프론트엔드 리다이렉트 핸들러 등록
+                        .successHandler(oAuth2SuccessHandler)
+                )
+
                 // URL 엔드포인트별 기본 접근 인가 설정
                 .authorizeHttpRequests(auth -> auth
+
                         // 게시글 목록 및 상세 조회(GET)는 비로그인 사용자에게도 공개 허용
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
+
+                        // 소셜 로그인 테스트용
+                        .requestMatchers("/oauth/login.html", "/favicon.ico", "/oauth/**").permitAll()
 
                         // 공지사항 조회(GET)는 비로그인 사용자에게도 공개 허용
                         .requestMatchers(HttpMethod.GET, "/api/v1/notices/**").permitAll()
@@ -106,6 +140,7 @@ public class SecurityConfig {
                         // 그 외 모든 요청(게시글 작성, 수정, 삭제 등)은 로그인 인증을 거쳐야 함
                         .anyRequest().authenticated()
                 );
+
 
         return http.build();
     }

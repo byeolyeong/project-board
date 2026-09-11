@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -74,10 +75,34 @@ public class GlobalRestExceptionHandler {
         return ResponseEntity.status(ErrorCode.BUSINESS_RULE_VIOLATION.getHttpStatus()).body(response);
     }
 
+    // 인증 실패 또는 유효하지 않은 자격 증명 예외 처리 (401 Unauthorized 응답)
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+        ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.UNAUTHORIZED_ACCESS, ex.getMessage());
+        return ResponseEntity.status(ErrorCode.UNAUTHORIZED_ACCESS.getHttpStatus()).body(response);
+    }
+
     // 권한이 없는 리소스 접근 시 호출됨(403 Forbidden 응답)
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ApiErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
         ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.FORBIDDEN_OPERATION);
+        return ResponseEntity.status(ErrorCode.FORBIDDEN_OPERATION.getHttpStatus()).body(response);
+    }
+
+    // =========================================================
+    // 권한 부족
+    // HTTP 403 Forbidden
+    // =========================================================
+
+    // IllegalStateException이 발생하면 호출된다.
+    // 예: 다른 사용자의 게시글을 수정하거나 삭제하려는 경우
+
+    // 권한이 부족할 때(403 Forbidden 응답)
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiErrorResponse> handleIllegalStateException(IllegalStateException ex) {
+        // 권한 부족에 해당하는 에러 응답을 생성함
+        ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.FORBIDDEN_OPERATION, ex.getMessage());
+        // HTTP 403 Forbidden과 에러 응답 데이터를 반환함
         return ResponseEntity.status(ErrorCode.FORBIDDEN_OPERATION.getHttpStatus()).body(response);
     }
 
@@ -95,24 +120,6 @@ public class GlobalRestExceptionHandler {
         ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.RESOURCE_NOT_FOUND, ex.getMessage());
         // HTTP 404 Not Found와 에러 응답 데이터를 반환함
         return ResponseEntity.status(ErrorCode.RESOURCE_NOT_FOUND.getHttpStatus()).body(response);
-    }
-
-
-    // =========================================================
-    // 권한 부족
-    // HTTP 403 Forbidden
-    // =========================================================
-
-    // IllegalStateException이 발생하면 호출된다.
-    // 예: 다른 사용자의 게시글을 수정하거나 삭제하려는 경우
-
-    // 권한이 부족할 때(403 Forbidden 응답)
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ApiErrorResponse> handleIllegalStateException(IllegalStateException ex) {
-        // 권한 부족에 해당하는 에러 응답을 생성함
-        ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.FORBIDDEN_OPERATION, ex.getMessage());
-        // HTTP 403 Forbidden과 에러 응답 데이터를 반환함
-        return ResponseEntity.status(ErrorCode.FORBIDDEN_OPERATION.getHttpStatus()).body(response);
     }
 
 

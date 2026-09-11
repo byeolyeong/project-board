@@ -5,6 +5,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### OAuth Secret ###
+application-oauth.yaml
+
 ### STS ###
 .apt_generated
 .classpath

@@ -1,7 +1,7 @@
 info:
   name: 신규 게시글 등록
   type: http
-  seq: 5
+  seq: 1
   tags:
     - SNS 게시글 API
 

@@ -13,4 +13,10 @@
         SELECT id, email, password, nickname, profile_image, role, created_At FROM member WHERE id = #{id}
     </select>
 
+    <!-- 신규 회원 등록 (소셜 로그인 자동 회원가입) -->
+    <insert id="save" parameterType="net.likelion.bebc25.sns.domain.Member" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO member (email, password, nickname, role, created_at)
+        VALUES (#{email}, COALESCE(#{password}, ''), #{nickname}, #{role}, NOW())
+    </insert>
+
 </mapper>

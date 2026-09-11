@@ -1,12 +1,12 @@
 info:
-  name: 게시글 삭제
+  name: 게시글 수정
   type: http
-  seq: 3
+  seq: 2
   tags:
     - SNS 게시글 API
 
 http:
-  method: DELETE
+  method: PUT
   url: "{{baseUrl}}/posts/:id"
   headers:
     - name: X-Member-Id
@@ -16,7 +16,14 @@ http:
     - name: id
       value: "3"
       type: path
-      description: 삭제할 게시글 ID
+      description: 수정할 게시글 ID
+  body:
+    type: json
+    data: |-
+      {
+        "content": "수정 내용",
+        "imageUrl": "http.."
+      }
   auth: inherit
 
 settings:
@@ -27,11 +34,11 @@ settings:
   forwardAuthorizationHeader: false
 
 examples:
-  - name: 204 Response
-    description: 게시글 삭제 완료
+  - name: 200 Response
+    description: 게시글 수정 성공
     request:
       url: "{{baseUrl}}/api/v1/posts/:id"
-      method: DELETE
+      method: PUT
       headers:
         - name: X-Member-Id
           value: "1"
@@ -40,18 +47,37 @@ examples:
         - name: id
           value: "1"
           type: path
-          description: 삭제할 게시글 ID
-    response:
-      status: 204
-      statusText: No Content
+          description: 수정할 게시글 ID
       body:
-        type: text
-        data: ""
-  - name: 403 Response
-    description: 본인 작성 게시글이 아니므로 삭제 권한 없음
+        type: json
+        data: |-
+          {
+            "content": "",
+            "imageUrl": ""
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "id": 1,
+            "memberId": 1,
+            "content": "스프링 부트 학습 중..",
+            "imageUrl": "https://sample.com/images/hello.png",
+            "likeCount": 0,
+            "createdAt": "2026-09-08T04:23:00",
+            "updatedAt": "2026-09-08T04:23:00"
+          }
+  - name: 400 Response
+    description: 입력값 유효성 검증 실패
     request:
       url: "{{baseUrl}}/api/v1/posts/:id"
-      method: DELETE
+      method: PUT
       headers:
         - name: X-Member-Id
           value: "1"
@@ -60,7 +86,57 @@ examples:
         - name: id
           value: "1"
           type: path
-          description: 삭제할 게시글 ID
+          description: 수정할 게시글 ID
+      body:
+        type: json
+        data: |-
+          {
+            "content": "",
+            "imageUrl": ""
+          }
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "code": "",
+            "message": "",
+            "status": 0,
+            "timestamp": "",
+            "errors": [
+              {
+                "field": "",
+                "rejectedValue": "",
+                "reason": ""
+              }
+            ]
+          }
+  - name: 403 Response
+    description: 본인 작성 게시글이 아니므로 수정 권한 없음
+    request:
+      url: "{{baseUrl}}/api/v1/posts/:id"
+      method: PUT
+      headers:
+        - name: X-Member-Id
+          value: "1"
+          description: 작성자 회원 ID
+      params:
+        - name: id
+          value: "1"
+          type: path
+          description: 수정할 게시글 ID
+      body:
+        type: json
+        data: |-
+          {
+            "content": "",
+            "imageUrl": ""
+          }
     response:
       status: 403
       statusText: Forbidden
@@ -84,10 +160,10 @@ examples:
             ]
           }
   - name: 404 Response
-    description: 삭제할 대상 게시글이 존재하지 않음
+    description: 수정할 대상 게시글이 존재하지 않음
     request:
       url: "{{baseUrl}}/api/v1/posts/:id"
-      method: DELETE
+      method: PUT
       headers:
         - name: X-Member-Id
           value: "1"
@@ -96,7 +172,14 @@ examples:
         - name: id
           value: "1"
           type: path
-          description: 삭제할 게시글 ID
+          description: 수정할 게시글 ID
+      body:
+        type: json
+        data: |-
+          {
+            "content": "",
+            "imageUrl": ""
+          }
     response:
       status: 404
       statusText: Not Found
@@ -123,7 +206,7 @@ examples:
     description: 내부 서버 오류
     request:
       url: "{{baseUrl}}/api/v1/posts/:id"
-      method: DELETE
+      method: PUT
       headers:
         - name: X-Member-Id
           value: "1"
@@ -132,7 +215,14 @@ examples:
         - name: id
           value: "1"
           type: path
-          description: 삭제할 게시글 ID
+          description: 수정할 게시글 ID
+      body:
+        type: json
+        data: |-
+          {
+            "content": "",
+            "imageUrl": ""
+          }
     response:
       status: 500
       statusText: Internal Server Error
@@ -156,4 +246,4 @@ examples:
             ]
           }
 
-docs: 게시글 ID를 전달받아 해당 자원을 삭제합니다.
+docs: 게시글 ID와 수정할 본문 내용을 전달받아 데이터를 갱신합니다.
